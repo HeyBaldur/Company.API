@@ -7,9 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Company.API", "Company.API\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Company.Models", "Company.Models\Company.Models.csproj", "{35E9E82F-0B9C-4D46-AEE8-3B72BC83DEA3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Company.Common", "Company.Common\Company.Common.csproj", "{8C5AC45E-DF2D-480A-A4C2-7E0DEE7977D2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Company.Common", "Company.Common\Company.Common.csproj", "{8C5AC45E-DF2D-480A-A4C2-7E0DEE7977D2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Company.Infrastructure", "Company.Infrastructure\Company.Infrastructure.csproj", "{758FAC22-AF08-433D-B171-387A4947F122}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Company.Infrastructure", "Company.Infrastructure\Company.Infrastructure.csproj", "{758FAC22-AF08-433D-B171-387A4947F122}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

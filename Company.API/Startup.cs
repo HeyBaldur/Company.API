@@ -1,3 +1,4 @@
+using Company.API.Helpers;
 using Company.Common.Connection.v1;
 using Company.Infrastructure.Services;
 using Microsoft.AspNetCore.Builder;
@@ -6,6 +7,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using System;
+using System.IO;
+using System.Reflection;
 
 namespace Company.API
 {
@@ -26,12 +30,16 @@ namespace Company.API
 
             #region Mongo Services
             services.AddSingleton<UserService>();
+            services.AddScoped<IGenericReturnableHelper, GenericReturnableHelper>();
             #endregion
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Company.API", Version = "v1" });
+
+                var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
             });
         }
 

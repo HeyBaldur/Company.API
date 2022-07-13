@@ -19,20 +19,20 @@ namespace Company.API.Helpers
             switch (httpStatusCode)
             {
                 case HttpStatusCode.OK:
-                    return Ok(data);
+                    return this.Ok(data);
                 case HttpStatusCode.BadRequest:
-                    return BadRequest(data);
+                    return this.BadRequest(data);
                 case HttpStatusCode.Forbidden:
-                    return Forbid();
+                    return this.Forbid();
                 case HttpStatusCode.InternalServerError:
-                    return StatusCode(((int)httpStatusCode), data);
+                    return this.StatusCode((int)httpStatusCode, data);
                 case HttpStatusCode.NotFound:
-                    return NotFound(data);
+                    return this.NotFound(data);
                 default:
                     break;
             }
 
-            return Conflict();
+            return this.Conflict();
         }
     }
 }

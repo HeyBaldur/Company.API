@@ -8,6 +8,7 @@ using Company.Infrastructure.Interfaces;
 using Company.Models.Dtos;
 using Company.Infrastructure.Helpers;
 using System.Net;
+using Company.Common.Core;
 
 namespace Company.Infrastructure.Services
 {
@@ -37,6 +38,11 @@ namespace Company.Infrastructure.Services
         {
             try
             {
+                if (string.IsNullOrEmpty(userDto.Email) || string.IsNullOrEmpty(userDto.FullName))
+                {
+                    return new GenericOperationResponse<User>(true, Constants.MissingInformation, HttpStatusCode.BadRequest);
+                }
+
                 var user = new User
                 {
                     ClientKey = Guid.NewGuid().ToString(),
@@ -48,7 +54,7 @@ namespace Company.Infrastructure.Services
 
                 await _userCollection.InsertOneAsync(user);
 
-                return new GenericOperationResponse<User>(user, @"Success", HttpStatusCode.OK);
+                return new GenericOperationResponse<User>(user, Constants.KeyCreated, HttpStatusCode.OK);
             }
             catch (Exception ex)
             {
