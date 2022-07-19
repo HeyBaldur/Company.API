@@ -4,8 +4,8 @@
 
 namespace Company.API.Helpers
 {
-    using System.Net;
     using Microsoft.AspNetCore.Mvc;
+    using System.Net;
 
     public interface IGenericReturnableHelper
     {

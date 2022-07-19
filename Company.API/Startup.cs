@@ -28,15 +28,24 @@ namespace Company.API
             // Mongo Connection
             services.Configure<DatabaseSettings>(Configuration.GetSection("ServiceDatabase"));
 
+            // Add Automapper
+            services.AddAutoMapper(typeof(Startup));
+
             #region Mongo Services
             services.AddSingleton<UserService>();
             services.AddScoped<IGenericReturnableHelper, GenericReturnableHelper>();
+            services.AddSingleton<DeveloperService>();
             #endregion
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Company.API", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "HeyBaldur Companybase API",
+                    Version = "v1",
+                    Description = "In HCAPI, company records store information about a business or organization. The Companies API allows you to manage this data and sync. Also, HCAPI is a platform for finding business information about private and public companies. It provides intelligent prospecting software powered by live company data."
+                });
 
                 var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
