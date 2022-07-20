@@ -1,5 +1,8 @@
 using Company.API.Helpers;
 using Company.Common.Connection.v1;
+using Company.Common.Inerfaces;
+using Company.Common.Services;
+using Company.Infrastructure.Interfaces;
 using Company.Infrastructure.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -32,9 +35,14 @@ namespace Company.API
             services.AddAutoMapper(typeof(Startup));
 
             #region Mongo Services
+            // Singletons
             services.AddSingleton<UserService>();
-            services.AddScoped<IGenericReturnableHelper, GenericReturnableHelper>();
             services.AddSingleton<DeveloperService>();
+            services.AddSingleton<CompanyService>();
+
+            // Shared services
+            services.AddScoped<IGenericReturnableHelper, GenericReturnableHelper>();
+            services.AddScoped<ITokenValidator, TokenValidator>();
             #endregion
 
             services.AddControllers();

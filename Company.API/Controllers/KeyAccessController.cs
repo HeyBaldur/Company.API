@@ -18,6 +18,13 @@ namespace Company.API.Controllers
         private readonly ILogger<KeyAccessController> _logger;
         protected readonly IGenericReturnableHelper _genericReturnableHelper;
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="userService"></param>
+        /// <param name="logger"></param>
+        /// <param name="genericReturnableHelper"></param>
+        /// <param name="developerService"></param>
         public KeyAccessController(
             UserService userService,
             ILogger<KeyAccessController> logger,
