@@ -7,5 +7,6 @@
         public const string DeveloperCreated = @"Your developer account has been created";
         public const string UserExists = @"User already exist in the current context";
         public const string Success = @"Success";
+        public const string NotFound = @"No information has been found";
     }
 }

@@ -80,7 +80,7 @@ namespace Company.API.Controllers
 
         /// <summary>
         /// Generate token to authenticate. This token will be valid for 30 days. Every 30 days the user must update the token or create a new one to 
-        /// avoid future issues.
+        /// avoid future issues. If the user/developer does not forget about the token, it is possible to get a new token from this same endpoint.
         /// </summary>
         /// <param name="request">Request of the user to authenticate</param>
         /// <returns></returns>

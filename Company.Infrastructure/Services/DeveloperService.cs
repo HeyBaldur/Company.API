@@ -159,7 +159,7 @@ namespace Company.Infrastructure.Services
             };
 
             // Set key
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret + client));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_iConfiguration.GetSection("AppSettings:Token").Value));
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
 
             var tokenDescriptor = new SecurityTokenDescriptor

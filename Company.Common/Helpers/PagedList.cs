@@ -1,31 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query;
 
 namespace Company.Common.Helpers
 {
-    public class PagedList<T>: List<T>
+    public class PagedList<T> : List<T>
     {
         /// <summary>
         /// Current page
         /// </summary>
         public int CurrentPage { get; set; }
-        
+
         /// <summary>
         /// Number of the total pages of the results
         /// </summary>
         public int TotalPages { get; set; }
-        
+
         /// <summary>
         /// Number of the total items per page
         /// </summary>
         public int PageSize { get; set; }
-        
+
         /// <summary>
         /// Total number of items
         /// </summary>

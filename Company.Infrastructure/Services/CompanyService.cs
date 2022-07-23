@@ -4,15 +4,16 @@ using Company.Common.Core;
 using Company.Common.Helpers;
 using Company.Infrastructure.Helpers;
 using Company.Infrastructure.Interfaces;
+using Company.Models.Dtos;
 using Company.Models.Helpers;
 using Company.Models.v1;
 using Microsoft.Extensions.Options;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Company.Infrastructure.Services
@@ -36,23 +37,28 @@ namespace Company.Infrastructure.Services
         /// </summary>
         /// <param name="businesses"></param>
         /// <returns></returns>
-        public async Task<GenericOperationResponse<bool>> CreateCompanyAsync(List<Business> businesses)
+        public async Task<GenericOperationResponse<bool>> CreateCompanyAsync(List<BusinessDto> businesses, string userId)
         {
             try
             {
-                int counter = 0;
-                foreach (var business in businesses)
+                var businessMapped = _mapper.Map<List<Business>>(businesses);
+
+                foreach (var item in businessMapped)
                 {
-                    await _businessCollection.InsertOneAsync(business);
-                    counter++;
+                    item.UserId = userId;
+
+                    if (item.People.Any())
+                    {
+                        foreach (var person in item.People)
+                        {
+                            person.Id = ObjectId.GenerateNewId().ToString();
+                            person.UserId = userId;
+                        }
+                    }
                 }
 
-                if (counter > 0)
-                {
-                    return new GenericOperationResponse<bool>(false, Constants.Success, HttpStatusCode.OK);
-                }
-
-                return new GenericOperationResponse<bool>(true, @"No information was saved", HttpStatusCode.BadRequest);
+                await _businessCollection.InsertManyAsync(businessMapped);
+                return new GenericOperationResponse<bool>(false, Constants.Success, HttpStatusCode.OK);
             }
             catch (Exception ex)
             {
@@ -61,19 +67,28 @@ namespace Company.Infrastructure.Services
         }
 
         /// <summary>
-        /// 
+        /// Get business information based on the query params we show
         /// </summary>
         /// <param name="query"></param>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public async Task<PagedList<Business>> GetBusinesses(QueryCompanyParams query, string userId)
+        public async Task<GenericOperationResponse<PagedList<Business>>> GetBusinesses(QueryCompanyParams query, string userId)
         {
 
             var cursor = await _businessCollection.FindAsync(x => x.UserId == userId);
 
             var result = cursor.ToListAsync();
 
-            return await PagedList<Business>.CreateAsync(result.Result, query.PageNumber, query.PageSize);
+            var businesses = result.Result;
+
+            if (!businesses.Any())
+            {
+                return new GenericOperationResponse<PagedList<Business>>(true, Constants.NotFound, HttpStatusCode.NotFound);
+            }
+
+            var paged = PagedList<Business>.CreateAsync(businesses, query.PageNumber, query.PageSize);
+
+            return new GenericOperationResponse<PagedList<Business>>(paged.Result, Constants.Success, HttpStatusCode.OK);
         }
     }
 }

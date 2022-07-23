@@ -2,17 +2,19 @@ using Company.API.Helpers;
 using Company.Common.Connection.v1;
 using Company.Common.Inerfaces;
 using Company.Common.Services;
-using Company.Infrastructure.Interfaces;
 using Company.Infrastructure.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System;
 using System.IO;
 using System.Reflection;
+using System.Text;
 
 namespace Company.API
 {
@@ -31,6 +33,8 @@ namespace Company.API
             // Mongo Connection
             services.Configure<DatabaseSettings>(Configuration.GetSection("ServiceDatabase"));
 
+            services.AddAuthentication();
+
             // Add Automapper
             services.AddAutoMapper(typeof(Startup));
 
@@ -43,6 +47,23 @@ namespace Company.API
             // Shared services
             services.AddScoped<IGenericReturnableHelper, GenericReturnableHelper>();
             services.AddScoped<ITokenValidator, TokenValidator>();
+            #endregion
+
+            #region Token logic
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII
+                            .GetBytes(Configuration.GetSection("AppSettings:Token").Value)),
+                        ValidateIssuer = false,
+                        ValidateAudience = false,
+                        ClockSkew = TimeSpan.Zero,
+                        RequireExpirationTime = false
+                    };
+                });
             #endregion
 
             services.AddControllers();
@@ -66,14 +87,17 @@ namespace Company.API
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Company.API v1"));
             }
+
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "HeyBaldur Companybase API"));
+            app.UseCors(x => x.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
 
             app.UseHttpsRedirection();
 
             app.UseRouting();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

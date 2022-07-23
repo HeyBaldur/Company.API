@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Http;
-using System.Threading.Tasks;
 
 namespace Company.Common.Inerfaces
 {
@@ -10,6 +9,6 @@ namespace Company.Common.Inerfaces
         /// </summary>
         /// <param name="req"></param>
         /// <returns></returns>
-        Task<int> ReturnUserId(HttpRequest req);
+        string ReturnUserId(HttpRequest req);
     }
 }

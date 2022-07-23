@@ -1,33 +1,39 @@
 ﻿using Company.API.Helpers;
-using Company.Common.Connection.v1;
-using Company.Infrastructure.Helpers;
-using Company.Infrastructure.Interfaces;
+using Company.Common.Inerfaces;
 using Company.Infrastructure.Services;
+using Company.Models.Dtos;
 using Company.Models.Helpers;
-using Company.Models.v1;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Company.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class BusinessController : ControllerBase
     {
         private readonly CompanyService _company;
         protected readonly IGenericReturnableHelper _genericReturnableHelper;
+        private readonly ITokenValidator _tokenValidator;
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="company"></param>
+        /// <param name="genericReturnableHelper"></param>
+        /// <param name="tokenValidator"></param>
         public BusinessController(
-            CompanyService company, 
-            IGenericReturnableHelper genericReturnableHelper)
+            CompanyService company,
+            IGenericReturnableHelper genericReturnableHelper,
+            ITokenValidator tokenValidator)
         {
             _company = company;
             _genericReturnableHelper = genericReturnableHelper;
+            _tokenValidator = tokenValidator;
         }
 
         /// <summary>
@@ -40,9 +46,10 @@ namespace Company.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> CreateBusiness(List<Business> businesses)
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> CreateBusiness(List<BusinessDto> businesses)
         {
-            var result = await _company.CreateCompanyAsync(businesses);
+            var result = await _company.CreateCompanyAsync(businesses, _tokenValidator.ReturnUserId(Request));
 
             return _genericReturnableHelper.GenericReturnableObject(result.StatusCode, result);
         }
@@ -51,14 +58,16 @@ namespace Company.API.Controllers
         /// Make a paginated query of the results of the companies.
         /// </summary>
         /// <param name="query"></param>
-        /// <param name="userId"></param>
         /// <returns></returns>
         [HttpPost("Query")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Query(QueryCompanyParams query, string userId)
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> Query(QueryCompanyParams query)
         {
+            var userId = _tokenValidator.ReturnUserId(Request);
+
             var result = await _company.GetBusinesses(query, userId);
 
             return _genericReturnableHelper.GenericReturnableObject(System.Net.HttpStatusCode.OK, result);
