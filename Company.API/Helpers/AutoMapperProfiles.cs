@@ -10,6 +10,8 @@ namespace Company.API.Helpers
         {
             CreateMap<User, UserDto>().ReverseMap();
             CreateMap<Developer, DeveloperDto>().ReverseMap();
+            CreateMap<Business, BusinessDto>().ReverseMap();
+            CreateMap<Person, PersonDto>().ReverseMap();
         }
     }
 }
