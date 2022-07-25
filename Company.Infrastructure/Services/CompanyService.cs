@@ -67,6 +67,26 @@ namespace Company.Infrastructure.Services
         }
 
         /// <summary>
+        /// Delete one record from the db
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<GenericOperationResponse<bool>> DeleteAsync(string id, string userId)
+        {
+            try
+            {
+                var result = await _businessCollection.FindOneAndDeleteAsync(x => x.Id == id && x.UserId == userId);
+
+                return new GenericOperationResponse<bool>(false, $"{result.Id} has been deleted", HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                return new GenericOperationResponse<bool>(true, ex.Message, HttpStatusCode.InternalServerError);
+            }
+        }
+
+        /// <summary>
         /// Get business information based on the query params we show
         /// </summary>
         /// <param name="query"></param>
@@ -89,6 +109,18 @@ namespace Company.Infrastructure.Services
             var paged = PagedList<Business>.CreateAsync(businesses, query.PageNumber, query.PageSize);
 
             return new GenericOperationResponse<PagedList<Business>>(paged.Result, Constants.Success, HttpStatusCode.OK);
+        }
+
+        /// <summary>
+        /// Get one record from the db
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        private async Task<Business> GetOneAsync(string id)
+        {
+            var cursor = await _businessCollection.FindAsync(x => x.Id == id).ConfigureAwait(false);
+
+            return cursor.FirstOrDefault();
         }
     }
 }

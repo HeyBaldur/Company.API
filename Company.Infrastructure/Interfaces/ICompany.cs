@@ -24,5 +24,14 @@ namespace Company.Infrastructure.Interfaces
         /// <param name="userId"></param>
         /// <returns></returns>
         Task<GenericOperationResponse<PagedList<Business>>> GetBusinesses(QueryCompanyParams query, string userId);
+
+        /// <summary>
+        /// Delelte one business from repo
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<GenericOperationResponse<bool>> DeleteAsync(string id, string userId);
+
     }
 }
