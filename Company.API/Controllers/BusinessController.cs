@@ -72,5 +72,24 @@ namespace Company.API.Controllers
 
             return _genericReturnableHelper.GenericReturnableObject(System.Net.HttpStatusCode.OK, result);
         }
+
+        /// <summary>
+        /// Delete one business from the repository
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        [HttpDelete]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> Delete(string id)
+        {
+            var userId = _tokenValidator.ReturnUserId(Request);
+
+            var result = await _company.DeleteAsync(id, userId);
+
+            return _genericReturnableHelper.GenericReturnableObject(System.Net.HttpStatusCode.OK, result);
+        }
     }
 }
