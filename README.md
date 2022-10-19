@@ -1,8 +1,9 @@
 
-# HeyBaldur Companybase API
+# CrunchBase Companybase API (clone)
 
-Muchos APIs son costosos y en el equipo de HeyBaldur hemos decidido crear un API de libre uso para desarrolladores y usuarios que deseen hacer uso de. La forma de hacer uso del API es totalmente librede costo.
+The project is based on good practices for developers and demonstrates an optimal way to print data. The main utility of this project is to store company information such as basic information, who are the founders as well as the income they have. This is an API based on and inspired by CrunchBase API.
 
+It can be used both for learning and for real production work.
 
 
 ## Tech Stack
