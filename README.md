@@ -1,5 +1,5 @@
 
-# CrunchBase Companybase API (clone)
+# CrunchBase Companybase API (clone) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 The project is based on good practices for developers and demonstrates an optimal way to print data. The main utility of this project is to store company information such as basic information, who are the founders as well as the income they have. This is an API based on and inspired by CrunchBase API.
 
