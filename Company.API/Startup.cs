@@ -2,6 +2,8 @@ using Company.API.Helpers;
 using Company.Common.Connection.v1;
 using Company.Common.Inerfaces;
 using Company.Common.Services;
+using Company.Infrastructure.Interfaces;
+using Company.Infrastructure.Repositories;
 using Company.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -43,6 +45,8 @@ namespace Company.API
             services.AddSingleton<UserService>();
             services.AddSingleton<DeveloperService>();
             services.AddSingleton<CompanyService>();
+            services.AddSingleton<CashFlowService>();
+            services.AddSingleton<CashFlowRepository>();
 
             // Shared services
             services.AddScoped<IGenericReturnableHelper, GenericReturnableHelper>();

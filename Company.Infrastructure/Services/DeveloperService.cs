@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Company.Common.Connection.v1;
 using Company.Common.Core;
+using Company.Common.Helpers;
 using Company.Infrastructure.Helpers;
 using Company.Infrastructure.Interfaces;
 using Company.Models.v1;
@@ -98,15 +99,29 @@ namespace Company.Infrastructure.Services
         {
             try
             {
-                var user = await GetUserAsync(request.SecretId, request.ClientKey, request.Email);
+                // Cleaning request and remove all threats from possible attacks
+                // Cross-Site Scripting (XSS) attacks are a type of injection,
+                // in which malicious scripts are injected into otherwise benign and trusted websites
+                // Check the following links for more information
+                // => https://github.com/mganss/HtmlSanitizer
+                // => https://owasp.org/www-community/attacks/xss/
+                AuthRequest authRequestClean = new AuthRequest()
+                {
+                    ClientKey = ApiSanitizer.Sanitizer(request.ClientKey),
+                    Email = ApiSanitizer.Sanitizer(request.Email),
+                    Password = ApiSanitizer.Sanitizer(request.Password),
+                    SecretId = ApiSanitizer.Sanitizer(request.SecretId)
+                };
 
-                var developer = await GetDeveloperAsync(request.SecretId, request.ClientKey);
+                var user = await GetUserAsync(authRequestClean.SecretId, authRequestClean.ClientKey, authRequestClean.Email);
+
+                var developer = await GetDeveloperAsync(authRequestClean.SecretId, authRequestClean.ClientKey);
 
                 var passHasher = new Helpers.PasswordHash();
 
                 if (user != null && developer != null && (developer.PasswordHash != null || developer.PasswordSalt != null))
                 {
-                    if (!passHasher.VerifyPassword(request.Password, developer.PasswordHash, developer.PasswordSalt))
+                    if (!passHasher.VerifyPassword(authRequestClean.Password, developer.PasswordHash, developer.PasswordSalt))
                     {
                         return new GenericOperationResponse<string>(true, "Wrong credentials", HttpStatusCode.BadRequest);
                     }

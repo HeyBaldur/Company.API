@@ -106,9 +106,9 @@ namespace Company.Infrastructure.Services
                 return new GenericOperationResponse<PagedList<Business>>(true, Constants.NotFound, HttpStatusCode.NotFound);
             }
 
-            var paged = PagedList<Business>.CreateAsync(businesses, query.PageNumber, query.PageSize);
+            var paged = PagedList<Business>.Create(businesses, query.PageNumber, query.PageSize);
 
-            return new GenericOperationResponse<PagedList<Business>>(paged.Result, Constants.Success, HttpStatusCode.OK);
+            return new GenericOperationResponse<PagedList<Business>>(paged, Constants.Success, HttpStatusCode.OK);
         }
 
         /// <summary>
