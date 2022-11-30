@@ -14,6 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Company.Infrastructure.Services
@@ -22,6 +23,7 @@ namespace Company.Infrastructure.Services
     {
         private readonly IMongoCollection<Business> _businessCollection;
         private readonly IMapper _mapper;
+        private static SemaphoreSlim _semaphoreSlim = new SemaphoreSlim(1, 1);
 
         public CompanyService(
             IMapper mapper,
@@ -39,6 +41,8 @@ namespace Company.Infrastructure.Services
         /// <returns></returns>
         public async Task<GenericOperationResponse<bool>> CreateCompanyAsync(List<BusinessDto> businesses, string userId)
         {
+            await _semaphoreSlim.WaitAsync();
+
             try
             {
                 var businessMapped = _mapper.Map<List<Business>>(businesses);
@@ -58,10 +62,15 @@ namespace Company.Infrastructure.Services
                 }
 
                 await _businessCollection.InsertManyAsync(businessMapped);
+
+                _semaphoreSlim.Release();
+
                 return new GenericOperationResponse<bool>(false, Constants.Success, HttpStatusCode.OK);
             }
             catch (Exception ex)
             {
+                _semaphoreSlim.Release();
+
                 return new GenericOperationResponse<bool>(true, ex.Message, HttpStatusCode.InternalServerError);
             }
         }

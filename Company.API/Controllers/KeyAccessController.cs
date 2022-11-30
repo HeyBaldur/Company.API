@@ -38,7 +38,7 @@ namespace Company.API.Controllers
         }
 
         /// <summary>
-        /// Get secret id and client key. When a user creates an account, the first step is to create client id and secret id.
+        /// Create a secret id and client key. When a user creates an account, the first step is to create client id and secret id.
         /// After these two are created the user can sign up with such credentials and create a password to create a token. 
         /// The token will be required every POST, DELETE, UPDATE or READ.
         /// </summary>
@@ -79,7 +79,7 @@ namespace Company.API.Controllers
         }
 
         /// <summary>
-        /// Generate token to authenticate. This token will be valid for 30 days. Every 30 days the user must update the token or create a new one to 
+        /// Create token to authenticate. This token will be valid for 30 days. Every 30 days the user must update the token or create a new one to 
         /// avoid future issues. If the user/developer does not forget about the token, it is possible to get a new token from this same endpoint.
         /// </summary>
         /// <param name="request">Request of the user to authenticate</param>
