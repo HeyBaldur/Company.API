@@ -8,5 +8,6 @@
         public const string UserExists = @"User already exist in the current context";
         public const string Success = @"Success";
         public const string NotFound = @"No information has been found";
+        public const string CouldNotCompleted = @"Task or process could not be completed";
     }
 }

@@ -57,7 +57,7 @@ namespace Company.API.Controllers
         /// <summary>
         /// Make a paginated query of the results of the companies.
         /// </summary>
-        /// <param name="query"></param>
+        /// <param name="query">Params we need to make a query</param>
         /// <returns></returns>
         [HttpPost("Query")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -76,7 +76,7 @@ namespace Company.API.Controllers
         /// <summary>
         /// Delete one business from the repository
         /// </summary>
-        /// <param name="query"></param>
+        /// <param name="id">Id of the business</param>
         /// <returns></returns>
         [HttpDelete]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -90,6 +90,10 @@ namespace Company.API.Controllers
             var result = await _company.DeleteAsync(id, userId);
 
             return _genericReturnableHelper.GenericReturnableObject(System.Net.HttpStatusCode.OK, result);
+
+            // 9BTTALFHFDIODDPJ
+            // https://www.alphavantage.co/support/#api-key
         }
     }
 }
+ 

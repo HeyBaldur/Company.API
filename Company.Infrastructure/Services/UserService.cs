@@ -9,6 +9,7 @@ using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using System;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Company.Infrastructure.Services
@@ -17,6 +18,7 @@ namespace Company.Infrastructure.Services
     {
         private readonly IMongoCollection<User> _userCollection;
         private readonly IMapper _mapper;
+        private static SemaphoreSlim _semaphoreSlim = new SemaphoreSlim(1, 1);
 
         /// <summary>
         /// Constructor
@@ -39,32 +41,41 @@ namespace Company.Infrastructure.Services
         /// <returns></returns>
         public async Task<GenericOperationResponse<User>> CreateOneAsync(UserDto userDto)
         {
+            // Represents a lightweight alternative to Semaphore that limits the number of threads
+            // that can access a resource or pool of resources concurrently.
+            await _semaphoreSlim.WaitAsync();
+
             try
             {
                 // Validate if the user exists
                 if (await EmailExistsAsync(userDto.Email).ConfigureAwait(false))
                 {
+                    _semaphoreSlim.Release();
                     return new GenericOperationResponse<User>(true, Constants.UserExists, HttpStatusCode.BadRequest);
                 }
 
                 // Validate if the required params are correct
                 if (string.IsNullOrEmpty(userDto.Email) || string.IsNullOrEmpty(userDto.FullName))
                 {
+                    _semaphoreSlim.Release();
                     return new GenericOperationResponse<User>(true, Constants.MissingInformation, HttpStatusCode.BadRequest);
                 }
 
                 var user = _mapper.Map<User>(userDto);
 
-                // Set Secret Id and Client key
                 user.SecretId = Guid.NewGuid().ToString();
                 user.ClientKey = Guid.NewGuid().ToString();
-
                 await _userCollection.InsertOneAsync(user);
+
+                _semaphoreSlim.Release();
 
                 return new GenericOperationResponse<User>(user, Constants.KeyCreated, HttpStatusCode.OK);
             }
             catch (Exception ex)
             {
+                // Release the semaphore
+                _semaphoreSlim.Release();
+
                 return new GenericOperationResponse<User>(true, ex.Message, HttpStatusCode.InternalServerError);
             }
         }
@@ -95,9 +106,22 @@ namespace Company.Infrastructure.Services
         /// <returns></returns>
         public async Task<bool> UpdateOneAsync(string id, User user)
         {
-            var result = await _userCollection.ReplaceOneAsync(x => x.Id == id, user);
+            // Represents a lightweight alternative to Semaphore that limits the number of threads
+            // that can access a resource or pool of resources concurrently.
+            await _semaphoreSlim.WaitAsync();
 
-            return result.IsAcknowledged;
+            try
+            {
+                var result = await _userCollection.ReplaceOneAsync(x => x.Id == id, user);
+
+                return result.IsAcknowledged;
+            }
+            finally
+            {
+                // Represents a lightweight alternative to Semaphore that limits the number of threads
+                // that can access a resource or pool of resources concurrently.
+                _semaphoreSlim.Release();
+            }
         }
 
         /// <summary>
